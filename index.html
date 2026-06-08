@@ -106,6 +106,36 @@
                                 </label>
                                 <input type="number" id="initIrp" min="0" max="50000" step="100" value="1000">
                             </div>
+                            <div class="input-group">
+                                <label for="initHouse">주택 자산 (만원)
+                                    <span class="tooltip" title="본인 소유의 주택 자산입니다. 주택연금 재원으로 활용하거나 총자산에 포함할 수 있습니다."><i data-lucide="help-circle"></i></span>
+                                </label>
+                                <input type="number" id="initHouse" min="0" max="1000000" step="1000" value="50000">
+                            </div>
+                            <div class="input-group">
+                                <label for="initOther">기타 자산 (만원)
+                                    <span class="tooltip" title="기타 보유 자산(부동산, 금 등)입니다."><i data-lucide="help-circle"></i></span>
+                                </label>
+                                <input type="number" id="initOther" min="0" max="1000000" step="1000" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="useHousePension">주택연금 활용 여부
+                                    <span class="tooltip" title="주택을 담보로 평생 매달 연금을 수령합니다. (만 55세부터 신청 가능)"><i data-lucide="help-circle"></i></span>
+                                </label>
+                                <select id="useHousePension">
+                                    <option value="no" selected>주택연금 미신청 (자산 총액만 유지)</option>
+                                    <option value="yes">주택연금 신청 (은퇴 시점부터 수령)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="useOtherAsset">기타 자산 생활비 활용
+                                    <span class="tooltip" title="기타 자산을 은퇴 생활비 재원으로 인출하여 사용할지 여부입니다."><i data-lucide="help-circle"></i></span>
+                                </label>
+                                <select id="useOtherAsset">
+                                    <option value="no" selected>생활비로 미사용 (자산 보존)</option>
+                                    <option value="yes">생활비로 사용 (일반 자산과 동일)</option>
+                                </select>
+                            </div>
                             <div class="input-group full-width">
                                 <label for="expectedSeverance">예상 퇴직금 (만원, 세전)
                                     <span class="tooltip" title="은퇴 시점에 수령할 퇴직금 총액입니다. 은퇴 시 IRP로 이체하여 연금으로 수령하면 퇴직소득세를 30%~40% 절감할 수 있습니다."><i data-lucide="help-circle"></i></span>
@@ -179,6 +209,15 @@
                                 <select id="incomeLevel">
                                     <option value="low">총급여 5,500만원 이하 (16.5% 세액공제)</option>
                                     <option value="high" selected>총급여 5,500만원 초과 (13.2% 세액공제)</option>
+                                </select>
+                            </div>
+                            <div class="input-group full-width">
+                                <label for="adjustInflation">생활비 인플레이션 반영 여부
+                                    <span class="tooltip" title="매년 물가상승률만큼 은퇴 생활비 목표액을 증액할지 여부입니다. 반영 시 매년 생활비가 늘어나며, 미반영 시 은퇴 후 평생 월 500만원(연 6000만원) 고정액을 인출합니다."><i data-lucide="help-circle"></i></span>
+                                </label>
+                                <select id="adjustInflation">
+                                    <option value="no" selected>미반영 (평생 월 500만원/연 6000만원 고정)</option>
+                                    <option value="yes">반영 (매년 물가상승률만큼 생활비 증액)</option>
                                 </select>
                             </div>
                         </div>
@@ -302,7 +341,10 @@
                                     <th>퇴직금(IRP)</th>
                                     <th>ISA</th>
                                     <th>일반 계좌</th>
+                                    <th>주택 자산</th>
+                                    <th>기타 자산</th>
                                     <th>수령액 합계</th>
+                                    <th>부족 금액</th>
                                     <th>세금 납부액</th>
                                 </tr>
                             </thead>

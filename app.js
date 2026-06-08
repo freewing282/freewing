@@ -87,9 +87,9 @@ syncInputs.forEach(({ range, num }) => {
 
 // Event listeners for other inputs
 const standardInputs = [
-    'initCash', 'initIsa', 'initPension', 'initIrp',
-    'savePension', 'saveIrp', 'saveIsa', 'saveCash',
-    'returnRate', 'inflationRate', 'nationalPension', 'incomeLevel'
+    'initCash', 'initIsa', 'initPension', 'initIrp', 'initHouse', 'initOther', 
+    'useHousePension', 'useOtherAsset', 'savePension', 'saveIrp', 'saveIsa', 'saveCash',
+    'returnRate', 'inflationRate', 'nationalPension', 'incomeLevel', 'adjustInflation'
 ];
 
 standardInputs.forEach(id => {
@@ -186,6 +186,10 @@ function calculateSimulation() {
     const initIsa = parseFloat(document.getElementById('initIsa').value);
     const initPension = document.getElementById('initPension') ? parseFloat(document.getElementById('initPension').value) : 2000;
     const initIrp = document.getElementById('initIrp') ? parseFloat(document.getElementById('initIrp').value) : 1000;
+    const initHouse = parseFloat(document.getElementById('initHouse').value);
+    const initOther = parseFloat(document.getElementById('initOther').value);
+    const useHousePension = document.getElementById('useHousePension').value;
+    const useOtherAsset = document.getElementById('useOtherAsset').value;
     const expectedSeverance = parseFloat(document.getElementById('expectedSeverance').value);
     
     const savePension = parseFloat(document.getElementById('savePension').value);
@@ -197,6 +201,7 @@ function calculateSimulation() {
     const inflationRate = parseFloat(document.getElementById('inflationRate').value);
     const nationalPension = parseFloat(document.getElementById('nationalPension').value); // Monthly (만원)
     const incomeLevel = document.getElementById('incomeLevel').value;
+    const adjustInflation = document.getElementById('adjustInflation').value;
     
     const creditRate = (incomeLevel === 'low') ? 0.165 : 0.132;
     const isaTaxFreeLimit = (incomeLevel === 'low') ? 400 : 200;
@@ -225,7 +230,7 @@ function calculateSimulation() {
     let totalTaxPaidDuringDecumulation = 0;
     optimalResult.logs.forEach(log => {
         if (log.age >= retirementAge) {
-            totalGrossWithdrawal += log.withdrawals.pension + log.withdrawals.severance + log.withdrawals.isa + log.withdrawals.cash + log.withdrawals.nonTaxedPension;
+            totalGrossWithdrawal += log.withdrawals.pension + log.withdrawals.severance + log.withdrawals.isa + log.withdrawals.cash + log.withdrawals.nonTaxedPension + log.withdrawals.housePension + (log.withdrawals.other / 0.95);
             totalTaxPaidDuringDecumulation += log.taxPaid;
         }
     });
@@ -256,6 +261,10 @@ function calculateSimulation() {
         let pension = initPension;
         let irp = initIrp;
         let irpSeverance = 0; // Starts at retirement
+        let house = initHouse;
+        let other = initOther;
+        let houseValueAtStart = 0; // Stores house value when starting pension
+        let hpRate = 0; // Housing pension rate
         
         // Tax tracking variables
         let nonTaxDeductedPension = 0; // Tracks excess contributions
@@ -276,12 +285,16 @@ function calculateSimulation() {
                 irp: 0,
                 irpSeverance: 0,
                 nonTaxDeductedPension: 0,
+                house: 0,
+                other: 0,
                 withdrawals: {
                     pension: 0,
                     nonTaxedPension: 0,
                     severance: 0,
                     isa: 0,
                     cash: 0,
+                    housePension: 0,
+                    other: 0,
                     nationalPension: 0
                 },
                 taxPaid: 0,
@@ -358,6 +371,8 @@ function calculateSimulation() {
                 pension *= (1 + returnRate/100);
                 irp *= (1 + returnRate/100);
                 isa *= (1 + returnRate/100);
+                house *= (1 + inflationRate/100);
+                other *= (1 + returnRate/100);
                 
                 // General Cash return (taxed dividends)
                 let cashNetReturn = returnRate - (2.0 * 0.154); // Assumes 2% dividend yield taxed at 15.4%
@@ -371,22 +386,41 @@ function calculateSimulation() {
                     irpSeverance = expectedSeverance;
                 }
                 
-                // Calculate target net spending for this year (inflation-adjusted)
-                let inflationFactor = Math.pow(1 + inflationRate/100, age - retirementAge);
+                // Calculate target net spending for this year (inflation-adjusted optionally)
+                let inflationFactor = (adjustInflation === 'yes') ? Math.pow(1 + inflationRate/100, age - retirementAge) : 1;
                 let targetAnnualNet = targetSpending * 12 * inflationFactor;
                 log.targetSpend = targetAnnualNet;
                 
                 let remainingTarget = targetAnnualNet;
                 
                 // 1. National Pension (국민연금) starts at age 65
+                // Note: National pension payout is adjusted for inflation automatically in real life, so we keep inflation factor here.
+                let npInflationFactor = Math.pow(1 + inflationRate/100, age - retirementAge);
                 if (age >= 65) {
-                    let grossNP = nationalPension * 12 * inflationFactor;
+                    let grossNP = nationalPension * 12 * npInflationFactor;
                     let npTax = calcNationalPensionTax(grossNP);
                     let netNP = grossNP - npTax;
                     
                     log.withdrawals.nationalPension = netNP;
                     remainingTarget = Math.max(0, remainingTarget - netNP);
                     log.taxPaid += npTax;
+                }
+                
+                // 1.5. Housing Pension (주택연금) starts at max(55, retirementAge)
+                let annualHousePension = 0;
+                if (useHousePension === 'yes' && age >= 55 && house > 0) {
+                    let startAge = Math.max(55, retirementAge);
+                    if (houseValueAtStart === 0) {
+                        houseValueAtStart = initHouse * Math.pow(1 + inflationRate/100, startAge - currentAge);
+                        hpRate = 0.0017 + (startAge - 55) * 0.00009;
+                        hpRate = Math.min(0.004, hpRate);
+                    }
+                    let maxPensionVal = houseValueAtStart * hpRate * 12;
+                    annualHousePension = Math.min(house, maxPensionVal);
+                    house = Math.max(0, house - annualHousePension);
+                    
+                    log.withdrawals.housePension = annualHousePension;
+                    remainingTarget = Math.max(0, remainingTarget - annualHousePension);
                 }
                 
                 // 2. Withdraw from private assets to satisfy remaining target
@@ -474,6 +508,18 @@ function calculateSimulation() {
                             remainingTarget = Math.max(0, remainingTarget - netIsaWithdrawal);
                             log.withdrawals.isa = netIsaWithdrawal;
                             log.taxPaid += (grossIsaWithdrawal - netIsaWithdrawal);
+                        }
+                        
+                        // Source D2: Other Assets (if enabled for spending)
+                        if (useOtherAsset === 'yes' && remainingTarget > 0 && other > 0) {
+                            let targetGrossFromOther = remainingTarget / 0.95; // 5% effective tax
+                            let grossOtherWithdrawal = Math.min(other, targetGrossFromOther);
+                            let netOtherWithdrawal = grossOtherWithdrawal * 0.95;
+                            
+                            other -= grossOtherWithdrawal;
+                            remainingTarget = Math.max(0, remainingTarget - netOtherWithdrawal);
+                            log.withdrawals.other = netOtherWithdrawal;
+                            log.taxPaid += (grossOtherWithdrawal - netOtherWithdrawal);
                         }
                         
                         // Source E: General Cash/Brokerage Account (Assumes effective 5% capital gains/dividend tax on withdrawals)
@@ -573,6 +619,18 @@ function calculateSimulation() {
                             log.taxPaid += (grossIsaWithdrawal - netIsaWithdrawal);
                         }
                         
+                        // Next, Other Assets
+                        if (useOtherAsset === 'yes' && remainingTarget > 0 && other > 0) {
+                            let targetGrossFromOther = remainingTarget / 0.95;
+                            let grossOtherWithdrawal = Math.min(other, targetGrossFromOther);
+                            let netOtherWithdrawal = grossOtherWithdrawal * 0.95;
+                            
+                            other -= grossOtherWithdrawal;
+                            remainingTarget = Math.max(0, remainingTarget - netOtherWithdrawal);
+                            log.withdrawals.other = netOtherWithdrawal;
+                            log.taxPaid += (grossOtherWithdrawal - netOtherWithdrawal);
+                        }
+                        
                         // Next, Cash
                         if (remainingTarget > 0 && cash > 0) {
                             let targetGrossFromCash = remainingTarget / 0.95;
@@ -598,6 +656,8 @@ function calculateSimulation() {
                 irp *= (1 + returnRate/100);
                 irpSeverance *= (1 + returnRate/100);
                 isa *= (1 + returnRate/100);
+                house *= (1 + inflationRate/100);
+                other *= (1 + returnRate/100);
                 
                 let cashNetReturn = returnRate - (2.0 * 0.154); // Dividends tax
                 cash *= (1 + Math.max(0, cashNetReturn)/100);
@@ -610,8 +670,10 @@ function calculateSimulation() {
             log.irp = Math.max(0, Math.round(irp));
             log.irpSeverance = Math.max(0, Math.round(irpSeverance));
             log.nonTaxDeductedPension = Math.max(0, Math.round(nonTaxDeductedPension));
+            log.house = Math.max(0, Math.round(house));
+            log.other = Math.max(0, Math.round(other));
             
-            log.totalAssets = log.cash + log.isa + log.pension + log.irp + log.irpSeverance;
+            log.totalAssets = log.cash + log.isa + log.pension + log.irp + log.irpSeverance + log.house + log.other;
             log.taxPaid = Math.round(log.taxPaid);
             
             logs.push(log);
@@ -789,6 +851,8 @@ function renderCharts() {
         const nonTaxedPensionData = decumulationLogs.map(l => l.withdrawals.nonTaxedPension);
         const severanceData = decumulationLogs.map(l => l.withdrawals.severance);
         const isaData = decumulationLogs.map(l => l.withdrawals.isa);
+        const housePensionData = decumulationLogs.map(l => l.withdrawals.housePension);
+        const otherData = decumulationLogs.map(l => l.withdrawals.other);
         const cashData = decumulationLogs.map(l => l.withdrawals.cash);
         
         projectionChartInstance = new Chart(ctx, {
@@ -801,6 +865,8 @@ function renderCharts() {
                     { label: '연금저축/IRP (비과세 원금)', data: nonTaxedPensionData, backgroundColor: '#a5b4fc' },
                     { label: '퇴직금 (IRP)', data: severanceData, backgroundColor: '#06b6d4' },
                     { label: 'ISA 자산', data: isaData, backgroundColor: '#10b981' },
+                    { label: '주택연금', data: housePensionData, backgroundColor: '#ec4899' },
+                    { label: '기타 자산', data: otherData, backgroundColor: '#8b5cf6' },
                     { label: '일반 자산', data: cashData, backgroundColor: '#64748b' }
                 ]
             },
@@ -896,7 +962,7 @@ function renderRoadmap() {
         if (phase.logs.length === 0) return;
         
         // Calculate average withdrawals in this phase
-        let avgTarget = 0, avgNP = 0, avgPen = 0, avgNonTax = 0, avgSev = 0, avgIsa = 0, avgCash = 0, avgTax = 0;
+        let avgTarget = 0, avgNP = 0, avgPen = 0, avgNonTax = 0, avgSev = 0, avgIsa = 0, avgHousePension = 0, avgOther = 0, avgCash = 0, avgTax = 0;
         phase.logs.forEach(l => {
             avgTarget += l.targetSpend;
             avgNP += l.withdrawals.nationalPension;
@@ -904,6 +970,8 @@ function renderRoadmap() {
             avgNonTax += l.withdrawals.nonTaxedPension;
             avgSev += l.withdrawals.severance;
             avgIsa += l.withdrawals.isa;
+            avgHousePension += l.withdrawals.housePension;
+            avgOther += l.withdrawals.other;
             avgCash += l.withdrawals.cash;
             avgTax += l.taxPaid;
         });
@@ -915,6 +983,8 @@ function renderRoadmap() {
         avgNonTax = Math.round(avgNonTax / count);
         avgSev = Math.round(avgSev / count);
         avgIsa = Math.round(avgIsa / count);
+        avgHousePension = Math.round(avgHousePension / count);
+        avgOther = Math.round(avgOther / count);
         avgCash = Math.round(avgCash / count);
         avgTax = Math.round(avgTax / count);
         
@@ -927,6 +997,8 @@ function renderRoadmap() {
         if (avgSev > 0) actionsHtml += `<li><span>퇴직소득세 30~40% 할인분 인출</span> <span class="action-val">연 +${avgSev.toLocaleString()} 만원</span></li>`;
         if (avgNonTax > 0) actionsHtml += `<li><span>연금계좌 내 비과세 원금 인출 (세금 0%)</span> <span class="action-val">연 +${avgNonTax.toLocaleString()} 만원</span></li>`;
         if (avgIsa > 0) actionsHtml += `<li><span>ISA 비과세/분리과세 자산 인출 (9.9%)</span> <span class="action-val">연 +${avgIsa.toLocaleString()} 만원</span></li>`;
+        if (avgHousePension > 0) actionsHtml += `<li><span>주택연금 수령 (비과세)</span> <span class="action-val">연 +${avgHousePension.toLocaleString()} 만원 (월 ${(avgHousePension/12).toFixed(0)}만원)</span></li>`;
+        if (avgOther > 0) actionsHtml += `<li><span>기타 자산 인출 (5% 세액 반영)</span> <span class="action-val">연 +${avgOther.toLocaleString()} 만원</span></li>`;
         if (avgCash > 0) actionsHtml += `<li><span>일반 주식/현금 계좌 인출</span> <span class="action-val">연 +${avgCash.toLocaleString()} 만원</span></li>`;
         
         timelineItem.innerHTML = `
@@ -967,7 +1039,9 @@ function renderTable() {
     logs.forEach(log => {
         const tr = document.createElement('tr');
         
-        let drawSum = log.withdrawals.pension + log.withdrawals.nonTaxedPension + log.withdrawals.severance + log.withdrawals.isa + log.withdrawals.cash + log.withdrawals.nationalPension;
+        let drawSum = log.withdrawals.pension + log.withdrawals.nonTaxedPension + log.withdrawals.severance + 
+                      log.withdrawals.isa + log.withdrawals.cash + log.withdrawals.housePension + 
+                      log.withdrawals.other + log.withdrawals.nationalPension;
         
         let ageLabel = `${log.age}세`;
         if (log.age === parseInt(document.getElementById('retirementAge').value)) {
@@ -977,11 +1051,14 @@ function renderTable() {
         tr.innerHTML = `
             <td>${ageLabel}</td>
             <td><strong>${log.totalAssets.toLocaleString()}</strong></td>
-            <td>${log.pension.toLocaleString()}</td>
+            <td>${(log.pension + log.irp).toLocaleString()}</td>
             <td>${log.irpSeverance.toLocaleString()}</td>
             <td>${log.isa.toLocaleString()}</td>
             <td>${log.cash.toLocaleString()}</td>
-            <td class="text-success-val">${drawSum > 0 ? drawSum.toLocaleString() : '-'}</td>
+            <td>${log.house.toLocaleString()}</td>
+            <td>${log.other.toLocaleString()}</td>
+            <td class="text-success-val">${drawSum > 0 ? Math.round(drawSum).toLocaleString() : '-'}</td>
+            <td class="${log.shortfall > 0.1 ? 'text-danger-val' : ''}">${log.shortfall > 0.1 ? Math.round(log.shortfall).toLocaleString() : '-'}</td>
             <td class="text-danger-val">${log.taxPaid > 0 ? log.taxPaid.toLocaleString() : '-'}</td>
         `;
         tbody.appendChild(tr);
