@@ -932,3 +932,321 @@ body.light-theme .data-table tbody tr:hover {
     color: var(--danger);
     font-weight: 600;
 }
+
+/* ==========================================================================
+   V2 Enhancements: Toolbar, Double Input & Print Styling
+   ========================================================================== */
+.results-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.results-header-row .results-tabs {
+    border-bottom: none;
+    padding-bottom: 0;
+    flex: 1;
+}
+
+.results-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn-outline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 8px 16px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.action-btn-outline i {
+    width: 14px;
+    height: 14px;
+}
+
+.action-btn-outline:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: var(--primary-light);
+    box-shadow: 0 0 10px var(--glow-primary);
+}
+
+body.light-theme .action-btn-outline:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.double-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.double-input input[type="number"] {
+    flex: 1;
+    min-width: 60px;
+    text-align: right;
+}
+
+.unit-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.bracket-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.bracket-row span {
+    font-size: 13px;
+    color: var(--text-main);
+    white-space: nowrap;
+}
+
+.bracket-row input[type="number"] {
+    width: 80px;
+    padding: 8px 10px;
+    text-align: right;
+}
+
+.bracket-row input[type="number"]:last-child {
+    flex: 1;
+    min-width: 100px;
+}
+
+/* Print-only elements are hidden by default in screen layout */
+.print-only-section {
+    display: none;
+}
+
+/* Print Layout Optimization */
+@media print {
+    .print-only-section {
+        display: block !important;
+        margin-bottom: 30px !important;
+        page-break-inside: avoid;
+    }
+    
+    .print-inputs-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 16px !important;
+        border-radius: 8px !important;
+        background: #f8fafc !important;
+        margin-bottom: 24px;
+    }
+    
+    .print-input-group {
+        display: flex !important;
+        justify-content: space-between !important;
+        border-bottom: 1px dashed #cbd5e1 !important;
+        padding: 6px 0 !important;
+    }
+    
+    .print-input-label {
+        font-weight: 600 !important;
+        color: #475569 !important;
+        font-size: 11px !important;
+    }
+    
+    .print-input-value {
+        color: #0f172a !important;
+        font-weight: 500 !important;
+        font-size: 11px !important;
+        text-align: right;
+    }
+
+    :root, body, body.dark-theme, body.light-theme {
+        --bg-app: #ffffff !important;
+        --bg-panel: #ffffff !important;
+        --bg-card: #f8fafc !important;
+        --border-color: #cbd5e1 !important;
+        --text-main: #0f172a !important;
+        --text-muted: #64748b !important;
+        --text-inverse: #000000 !important;
+        --primary: #4f46e5 !important;
+        --primary-light: #f0f2ff !important;
+        --success: #059669 !important;
+        --success-light: #ecfdf5 !important;
+        --info: #0891b2 !important;
+        --info-light: #ecfeff !important;
+    }
+
+    body {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 12px !important;
+    }
+
+    .app-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        display: block !important;
+    }
+
+    .app-header, 
+    .inputs-panel, 
+    .results-header-row .results-actions,
+    .results-tabs,
+    .chart-selection,
+    .chart-legend-info,
+    .theme-toggle,
+    .tooltip {
+        display: none !important;
+    }
+
+    .app-main {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .results-panel {
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        display: block !important;
+    }
+
+    /* Print Header Banner */
+    .results-panel::before {
+        content: "TaxRetire | 은퇴 자금 & 절세 시뮬레이션 보고서";
+        display: block;
+        font-family: 'Outfit', sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #0f172a;
+        color: #0f172a !important;
+    }
+
+    .kpi-dashboard {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 12px !important;
+        margin-bottom: 30px !important;
+        page-break-inside: avoid;
+    }
+
+    .kpi-card {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 12px !important;
+        border-radius: 8px !important;
+    }
+
+    /* Make all tabs visible consecutively */
+    .tab-content {
+        display: flex !important;
+        flex-direction: column !important;
+        page-break-after: always;
+        margin-bottom: 40px !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* Force visibility override */
+    #chartsTab, #roadmapTab, #tipsTab, #tableTab {
+        display: flex !important;
+    }
+
+    .chart-wrapper {
+        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        height: 350px !important;
+        page-break-inside: avoid;
+        margin-bottom: 20px;
+    }
+
+    .roadmap-timeline {
+        padding-left: 20px !important;
+    }
+
+    .roadmap-timeline::before {
+        background: #cbd5e1 !important;
+        left: 5px !important;
+    }
+
+    .timeline-dot {
+        left: -19px !important;
+        border-width: 2px !important;
+        background: #ffffff !important;
+    }
+
+    .timeline-content {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 12px 16px !important;
+        page-break-inside: avoid;
+    }
+
+    .timeline-age {
+        background: #e2e8f0 !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    .table-wrapper {
+        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        overflow-x: visible !important;
+    }
+
+    .data-table {
+        font-size: 11px !important;
+        width: 100% !important;
+    }
+
+    .data-table th {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border-bottom: 2px solid #94a3b8 !important;
+    }
+
+    .data-table td {
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+
+    .tips-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+    }
+
+    .tip-card {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        page-break-inside: avoid;
+    }
+}

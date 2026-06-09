@@ -58,21 +58,51 @@
                                 </div>
                             </div>
                             <div class="input-group">
-                                <label for="retirementAge">은퇴 나이 (세)
-                                    <span class="tooltip" title="월 500만원 사용을 시작할 은퇴 시점 나이입니다."><i data-lucide="help-circle"></i></span>
+                                <label for="retirementAge">은퇴 나이
+                                    <span class="tooltip" title="월 생활비 사용을 시작할 은퇴 시점 나이(년 + 개월)입니다."><i data-lucide="help-circle"></i></span>
                                 </label>
-                                <div class="slider-container">
-                                    <input type="range" id="retirementAgeRange" min="50" max="75" value="57">
+                                <div class="slider-container double-input">
                                     <input type="number" id="retirementAge" min="50" max="75" value="57">
+                                    <span class="unit-label">세</span>
+                                    <input type="number" id="retirementMonth" min="0" max="11" value="0">
+                                    <span class="unit-label">개월</span>
                                 </div>
                             </div>
                             <div class="input-group full-width">
-                                <label for="targetSpending">은퇴 후 월 희망 생활비 (만원, 실수령액)
-                                    <span class="tooltip" title="은퇴 후 매달 사용하고 싶은 세후 생활비입니다. 인플레이션을 반영하여 매년 증액 인출됩니다."><i data-lucide="help-circle"></i></span>
-                                </label>
-                                <div class="slider-container">
-                                    <input type="range" id="targetSpendingRange" min="200" max="1000" step="50" value="500">
-                                    <input type="number" id="targetSpending" min="200" max="1000" step="50" value="500">
+                                <label style="font-weight: 600; margin-bottom: 4px;">은퇴 후 나이대별 월 희망 생활비 (실수령액, 만원)</label>
+                                <div class="bracket-grid" style="display: flex; flex-direction: column; gap: 12px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color);">
+                                    <!-- Bracket 1 -->
+                                    <div class="bracket-row">
+                                        <input type="number" id="targetSpendStart1" min="20" max="95" value="57" title="구간 1 시작 나이">
+                                        <span>세 ~</span>
+                                        <input type="number" id="targetSpendEnd1" min="20" max="95" value="64" title="구간 1 종료 나이">
+                                        <span>세:</span>
+                                        <input type="number" id="targetSpend1" min="0" max="2000" step="10" value="600" title="구간 1 생활비">
+                                    </div>
+                                    <!-- Bracket 2 -->
+                                    <div class="bracket-row">
+                                        <input type="number" id="targetSpendStart2" min="20" max="95" value="65" title="구간 2 시작 나이">
+                                        <span>세 ~</span>
+                                        <input type="number" id="targetSpendEnd2" min="20" max="95" value="69" title="구간 2 종료 나이">
+                                        <span>세:</span>
+                                        <input type="number" id="targetSpend2" min="0" max="2000" step="10" value="450" title="구간 2 생활비">
+                                    </div>
+                                    <!-- Bracket 3 -->
+                                    <div class="bracket-row">
+                                        <input type="number" id="targetSpendStart3" min="20" max="95" value="70" title="구간 3 시작 나이">
+                                        <span>세 ~</span>
+                                        <input type="number" id="targetSpendEnd3" min="20" max="95" value="79" title="구간 3 종료 나이">
+                                        <span>세:</span>
+                                        <input type="number" id="targetSpend3" min="0" max="2000" step="10" value="300" title="구간 3 생활비">
+                                    </div>
+                                    <!-- Bracket 4 -->
+                                    <div class="bracket-row">
+                                        <input type="number" id="targetSpendStart4" min="20" max="95" value="80" title="구간 4 시작 나이">
+                                        <span>세 ~</span>
+                                        <input type="number" id="targetSpendEnd4" min="20" max="95" value="95" title="구간 4 종료 나이">
+                                        <span>세:</span>
+                                        <input type="number" id="targetSpend4" min="0" max="2000" step="10" value="200" title="구간 4 생활비">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -82,11 +112,22 @@
                     <div class="form-section">
                         <h3><span class="step-num">2</span> 현재 보유 자산</h3>
                         <div class="input-grid">
-                            <div class="input-group">
-                                <label for="initCash">일반 예적금 / 주식 (만원)
-                                    <span class="tooltip" title="세액공제 혜택이 없는 일반 계좌 및 현금 자산입니다."><i data-lucide="help-circle"></i></span>
-                                </label>
-                                <input type="number" id="initCash" min="0" max="1000000" step="100" value="20000">
+                            <div class="input-group full-width">
+                                <label style="font-weight: 600; margin-bottom: 4px;">일반 예적금 / 주식 분할 입력 (만원)</label>
+                                <div class="bracket-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                                    <div class="input-group">
+                                        <label for="initCash1">예적금/주식 1</label>
+                                        <input type="number" id="initCash1" min="0" max="1000000" step="100" value="15000">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="initCash2">예적금/주식 2</label>
+                                        <input type="number" id="initCash2" min="0" max="1000000" step="100" value="5000">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="initCash3">예적금/주식 3</label>
+                                        <input type="number" id="initCash3" min="0" max="1000000" step="100" value="0">
+                                    </div>
+                                </div>
                             </div>
                             <div class="input-group">
                                 <label for="initIsa">ISA 잔액 (만원)
@@ -112,11 +153,22 @@
                                 </label>
                                 <input type="number" id="initHouse" min="0" max="1000000" step="1000" value="50000">
                             </div>
-                            <div class="input-group">
-                                <label for="initOther">기타 자산 (만원)
-                                    <span class="tooltip" title="기타 보유 자산(부동산, 금 등)입니다."><i data-lucide="help-circle"></i></span>
-                                </label>
-                                <input type="number" id="initOther" min="0" max="1000000" step="1000" value="0">
+                            <div class="input-group full-width">
+                                <label style="font-weight: 600; margin-bottom: 4px;">기타 자산 분할 입력 (만원)</label>
+                                <div class="bracket-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                                    <div class="input-group">
+                                        <label for="initOther1">기타 자산 1</label>
+                                        <input type="number" id="initOther1" min="0" max="1000000" step="1000" value="0">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="initOther2">기타 자산 2</label>
+                                        <input type="number" id="initOther2" min="0" max="1000000" step="1000" value="0">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="initOther3">기타 자산 3</label>
+                                        <input type="number" id="initOther3" min="0" max="1000000" step="1000" value="0">
+                                    </div>
+                                </div>
                             </div>
                             <div class="input-group">
                                 <label for="useHousePension">주택연금 활용 여부
@@ -136,6 +188,30 @@
                                     <option value="yes">생활비로 사용 (일반 자산과 동일)</option>
                                 </select>
                             </div>
+                            
+                            <!-- 부채 입력 부분 -->
+                            <div class="input-group">
+                                <label for="initDebt">현재 부채 총액 (만원)
+                                    <span class="tooltip" title="보유하고 있는 담보대출, 신용대출 등 총 부채입니다."><i data-lucide="help-circle"></i></span>
+                                </label>
+                                <input type="number" id="initDebt" min="0" max="1000000" step="100" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="debtInterest">부채 연 이자율 (%)
+                                    <span class="tooltip" title="부채에 적용되는 연평균 금리입니다."><i data-lucide="help-circle"></i></span>
+                                </label>
+                                <input type="number" id="debtInterest" min="0" max="25" step="0.1" value="4.0">
+                            </div>
+                            <div class="input-group full-width">
+                                <label for="repayDebtAtRetire">은퇴 시 부채 상환 여부
+                                    <span class="tooltip" title="은퇴 시점에 보유한 일반 예적금/주식 자산으로 부채를 전액 상환할지 여부입니다. 미상환 시 이자비용이 발생합니다."><i data-lucide="help-circle"></i></span>
+                                </label>
+                                <select id="repayDebtAtRetire">
+                                    <option value="yes" selected>은퇴 시 일반 자산으로 부채 즉시 상환</option>
+                                    <option value="no">상환하지 않고 은퇴 이후 이자만 납입</option>
+                                </select>
+                            </div>
+                            
                             <div class="input-group full-width">
                                 <label for="expectedSeverance">예상 퇴직금 (만원, 세전)
                                     <span class="tooltip" title="은퇴 시점에 수령할 퇴직금 총액입니다. 은퇴 시 IRP로 이체하여 연금으로 수령하면 퇴직소득세를 30%~40% 절감할 수 있습니다."><i data-lucide="help-circle"></i></span>
@@ -227,6 +303,14 @@
 
             <!-- Right Side: Results Panel -->
             <section class="panel results-panel">
+                <!-- Print-only Inputs Summary -->
+                <div id="printInputsSummary" class="print-only-section">
+                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px; color: #0f172a;">시뮬레이션 입력 조건</h3>
+                    <div class="print-inputs-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
                 <!-- KPI Dashboard -->
                 <div class="kpi-dashboard">
                     <div class="kpi-card highlight">
@@ -255,12 +339,22 @@
                     </div>
                 </div>
 
-                <!-- Tabs Navigation -->
-                <div class="results-tabs">
-                    <button class="tab-btn active" data-tab="chartsTab"><i data-lucide="bar-chart-2"></i>자산 추이 및 구성</button>
-                    <button class="tab-btn" data-tab="roadmapTab"><i data-lucide="map"></i>최적 인출 로드맵</button>
-                    <button class="tab-btn" data-tab="tipsTab"><i data-lucide="sparkles"></i>핵심 절세 전략 & 가이드</button>
-                    <button class="tab-btn" data-tab="tableTab"><i data-lucide="table"></i>연도별 상세 데이터</button>
+                <!-- Results Header Row (Tabs + Actions) -->
+                <div class="results-header-row">
+                    <div class="results-tabs">
+                        <button class="tab-btn active" data-tab="chartsTab"><i data-lucide="bar-chart-2"></i>자산 추이 및 구성</button>
+                        <button class="tab-btn" data-tab="roadmapTab"><i data-lucide="map"></i>최적 인출 로드맵</button>
+                        <button class="tab-btn" data-tab="tipsTab"><i data-lucide="sparkles"></i>핵심 절세 전략 & 가이드</button>
+                        <button class="tab-btn" data-tab="tableTab"><i data-lucide="table"></i>연도별 상세 데이터</button>
+                    </div>
+                    <div class="results-actions">
+                        <button type="button" id="btnDownloadExcel" class="action-btn-outline" title="엑셀 파일로 시뮬레이션 결과 다운로드">
+                            <i data-lucide="download"></i><span>엑셀 다운로드</span>
+                        </button>
+                        <button type="button" id="btnPrint" class="action-btn-outline" title="시뮬레이션 결과 보고서 인쇄">
+                            <i data-lucide="printer"></i><span>인쇄하기</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Tab Contents -->
