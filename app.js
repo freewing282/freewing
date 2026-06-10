@@ -68,18 +68,22 @@ syncInputs.forEach(({ range, num }) => {
 
 // Event listeners for other inputs
 const standardInputs = [
-    'retirementAge', 'retirementMonth',
+    'userName', 'retirementAge', 'retirementMonth',
     'targetSpendStart1', 'targetSpendEnd1',
     'targetSpendStart2', 'targetSpendEnd2',
     'targetSpendStart3', 'targetSpendEnd3',
     'targetSpendStart4', 'targetSpendEnd4',
     'targetSpend1', 'targetSpend2', 'targetSpend3', 'targetSpend4',
+    'targetSpendFixed1', 'targetSpendVar1', 'targetSpendOther1',
+    'targetSpendFixed2', 'targetSpendVar2', 'targetSpendOther2',
+    'targetSpendFixed3', 'targetSpendVar3', 'targetSpendOther3',
+    'targetSpendFixed4', 'targetSpendVar4', 'targetSpendOther4',
     'initCash1', 'initCash2', 'initCash3',
-    'initIsa', 'initPension', 'initIrp', 'initHouse',
+    'initIsa', 'initPension1', 'initPension2', 'initIrp1', 'initIrp2', 'initHouse',
     'initOther1', 'initOther2', 'initOther3',
     'useHousePension', 'useOtherAsset',
     'initDebt', 'debtInterest', 'repayDebtAtRetire',
-    'savePension', 'saveIrp', 'saveIsa', 'saveCash',
+    'savePension1', 'savePension2', 'saveIrp1', 'saveIrp2', 'saveIsa', 'saveCash',
     'returnRate', 'inflationRate', 'nationalPension', 'incomeLevel', 'adjustInflation'
 ];
 
@@ -266,10 +270,29 @@ function calculateSimulation() {
     const targetSpendStart4 = start4El ? (parseInt(start4El.value) || (targetSpendEnd3 + 1)) : (targetSpendEnd3 + 1);
     const targetSpendEnd4 = end4El ? (parseInt(end4El.value) || 95) : 95;
 
-    const targetSpend1 = parseFloat(document.getElementById('targetSpend1').value) || 0;
-    const targetSpend2 = parseFloat(document.getElementById('targetSpend2').value) || 0;
-    const targetSpend3 = parseFloat(document.getElementById('targetSpend3').value) || 0;
-    const targetSpend4 = parseFloat(document.getElementById('targetSpend4').value) || 0;
+    const targetSpendFixed1 = parseFloat(document.getElementById('targetSpendFixed1').value) || 0;
+    const targetSpendVar1 = parseFloat(document.getElementById('targetSpendVar1').value) || 0;
+    const targetSpendOther1 = parseFloat(document.getElementById('targetSpendOther1').value) || 0;
+    const targetSpend1 = targetSpendFixed1 + targetSpendVar1 + targetSpendOther1;
+    if (document.getElementById('targetSpend1')) document.getElementById('targetSpend1').value = targetSpend1;
+
+    const targetSpendFixed2 = parseFloat(document.getElementById('targetSpendFixed2').value) || 0;
+    const targetSpendVar2 = parseFloat(document.getElementById('targetSpendVar2').value) || 0;
+    const targetSpendOther2 = parseFloat(document.getElementById('targetSpendOther2').value) || 0;
+    const targetSpend2 = targetSpendFixed2 + targetSpendVar2 + targetSpendOther2;
+    if (document.getElementById('targetSpend2')) document.getElementById('targetSpend2').value = targetSpend2;
+
+    const targetSpendFixed3 = parseFloat(document.getElementById('targetSpendFixed3').value) || 0;
+    const targetSpendVar3 = parseFloat(document.getElementById('targetSpendVar3').value) || 0;
+    const targetSpendOther3 = parseFloat(document.getElementById('targetSpendOther3').value) || 0;
+    const targetSpend3 = targetSpendFixed3 + targetSpendVar3 + targetSpendOther3;
+    if (document.getElementById('targetSpend3')) document.getElementById('targetSpend3').value = targetSpend3;
+
+    const targetSpendFixed4 = parseFloat(document.getElementById('targetSpendFixed4').value) || 0;
+    const targetSpendVar4 = parseFloat(document.getElementById('targetSpendVar4').value) || 0;
+    const targetSpendOther4 = parseFloat(document.getElementById('targetSpendOther4').value) || 0;
+    const targetSpend4 = targetSpendFixed4 + targetSpendVar4 + targetSpendOther4;
+    if (document.getElementById('targetSpend4')) document.getElementById('targetSpend4').value = targetSpend4;
     
     const initCash1 = parseFloat(document.getElementById('initCash1').value) || 0;
     const initCash2 = parseFloat(document.getElementById('initCash2').value) || 0;
@@ -277,8 +300,15 @@ function calculateSimulation() {
     const initCash = initCash1 + initCash2 + initCash3;
 
     const initIsa = parseFloat(document.getElementById('initIsa').value) || 0;
-    const initPension = document.getElementById('initPension') ? (parseFloat(document.getElementById('initPension').value) || 0) : 2000;
-    const initIrp = document.getElementById('initIrp') ? (parseFloat(document.getElementById('initIrp').value) || 0) : 1000;
+    
+    const initPension1 = document.getElementById('initPension1') ? (parseFloat(document.getElementById('initPension1').value) || 0) : 2000;
+    const initPension2 = document.getElementById('initPension2') ? (parseFloat(document.getElementById('initPension2').value) || 0) : 0;
+    const initPension = initPension1 + initPension2;
+
+    const initIrp1 = document.getElementById('initIrp1') ? (parseFloat(document.getElementById('initIrp1').value) || 0) : 1000;
+    const initIrp2 = document.getElementById('initIrp2') ? (parseFloat(document.getElementById('initIrp2').value) || 0) : 0;
+    const initIrp = initIrp1 + initIrp2;
+
     const initHouse = parseFloat(document.getElementById('initHouse').value) || 0;
     
     const initOther1 = parseFloat(document.getElementById('initOther1').value) || 0;
@@ -295,8 +325,13 @@ function calculateSimulation() {
 
     const expectedSeverance = parseFloat(document.getElementById('expectedSeverance').value) || 0;
     
-    const savePension = parseFloat(document.getElementById('savePension').value) || 0;
-    const saveIrp = parseFloat(document.getElementById('saveIrp').value) || 0;
+    const savePension1 = document.getElementById('savePension1') ? (parseFloat(document.getElementById('savePension1').value) || 0) : 600;
+    const savePension2 = document.getElementById('savePension2') ? (parseFloat(document.getElementById('savePension2').value) || 0) : 0;
+    const savePension = savePension1 + savePension2;
+
+    const saveIrp1 = document.getElementById('saveIrp1') ? (parseFloat(document.getElementById('saveIrp1').value) || 0) : 300;
+    const saveIrp2 = document.getElementById('saveIrp2') ? (parseFloat(document.getElementById('saveIrp2').value) || 0) : 0;
+    const saveIrp = saveIrp1 + saveIrp2;
     const saveIsa = parseFloat(document.getElementById('saveIsa').value) || 0;
     const saveCash = parseFloat(document.getElementById('saveCash').value) || 0;
     
@@ -695,7 +730,7 @@ function calculateSimulation() {
                 irp *= (1 + returnRate/100);
                 isa *= (1 + returnRate/100);
                 house *= (1 + inflationRate/100);
-                other *= (1 + returnRate/100);
+                other *= (1 + inflationRate/100);
                 
                 let cashNetReturn = returnRate - (2.0 * 0.154);
                 cash *= (1 + Math.max(0, cashNetReturn)/100);
@@ -806,7 +841,7 @@ function calculateSimulation() {
                 irpSeverance *= (1 + returnRate/100);
                 isa *= (1 + returnRate/100);
                 house *= (1 + inflationRate/100);
-                other *= (1 + returnRate/100);
+                other *= (1 + inflationRate/100);
                 
                 let cashNetReturn = returnRate - (2.0 * 0.154);
                 cash *= (1 + Math.max(0, cashNetReturn)/100);
@@ -867,7 +902,7 @@ function calculateSimulation() {
                 irpSeverance *= (1 + returnRate/100);
                 isa *= (1 + returnRate/100);
                 house *= (1 + inflationRate/100);
-                other *= (1 + returnRate/100);
+                other *= (1 + inflationRate/100);
                 
                 let cashNetReturn = returnRate - (2.0 * 0.154);
                 cash *= (1 + Math.max(0, cashNetReturn)/100);
@@ -907,6 +942,16 @@ function calculateSimulation() {
 // ==========================================================================
 function updateUI() {
     if (!simulationData) return;
+    
+    // Dynamic username sync in UI
+    const userNameEl = document.getElementById('userName');
+    if (userNameEl) {
+        const nameVal = userNameEl.value || '홍길동';
+        const appSubtitle = document.getElementById('appSubtitle');
+        if (appSubtitle) appSubtitle.innerText = `${nameVal} 님의 노후 자금 & 절세 시뮬레이터`;
+        const printTitle = document.querySelector('#printReportTitle h1');
+        if (printTitle) printTitle.innerText = `${nameVal} 님의 TaxRetire 은퇴 자금 & 절세 시뮬레이션 보고서`;
+    }
     
     const kpis = simulationData.kpis;
     
@@ -958,6 +1003,7 @@ function updatePrintSummary() {
     const grid = document.querySelector('#printInputsSummary .print-inputs-grid');
     if (!grid) return;
     
+    const userName = document.getElementById('userName').value || '홍길동';
     const currentAge = document.getElementById('currentAge').value;
     const retirementAge = document.getElementById('retirementAge').value;
     const retirementMonth = document.getElementById('retirementMonth') ? document.getElementById('retirementMonth').value : 0;
@@ -972,16 +1018,35 @@ function updatePrintSummary() {
     const targetSpendEnd4 = document.getElementById('targetSpendEnd4').value;
     
     const targetSpend1 = document.getElementById('targetSpend1').value;
+    const targetSpendFixed1 = document.getElementById('targetSpendFixed1').value;
+    const targetSpendVar1 = document.getElementById('targetSpendVar1').value;
+    const targetSpendOther1 = document.getElementById('targetSpendOther1').value;
+    
     const targetSpend2 = document.getElementById('targetSpend2').value;
+    const targetSpendFixed2 = document.getElementById('targetSpendFixed2').value;
+    const targetSpendVar2 = document.getElementById('targetSpendVar2').value;
+    const targetSpendOther2 = document.getElementById('targetSpendOther2').value;
+    
     const targetSpend3 = document.getElementById('targetSpend3').value;
+    const targetSpendFixed3 = document.getElementById('targetSpendFixed3').value;
+    const targetSpendVar3 = document.getElementById('targetSpendVar3').value;
+    const targetSpendOther3 = document.getElementById('targetSpendOther3').value;
+    
     const targetSpend4 = document.getElementById('targetSpend4').value;
+    const targetSpendFixed4 = document.getElementById('targetSpendFixed4').value;
+    const targetSpendVar4 = document.getElementById('targetSpendVar4').value;
+    const targetSpendOther4 = document.getElementById('targetSpendOther4').value;
     
     const initCash1 = document.getElementById('initCash1').value;
     const initCash2 = document.getElementById('initCash2').value;
     const initCash3 = document.getElementById('initCash3').value;
     const initIsa = document.getElementById('initIsa').value;
-    const initPension = document.getElementById('initPension') ? document.getElementById('initPension').value : 0;
-    const initIrp = document.getElementById('initIrp') ? document.getElementById('initIrp').value : 0;
+    
+    const initPension1 = document.getElementById('initPension1') ? document.getElementById('initPension1').value : 0;
+    const initPension2 = document.getElementById('initPension2') ? document.getElementById('initPension2').value : 0;
+    const initIrp1 = document.getElementById('initIrp1') ? document.getElementById('initIrp1').value : 0;
+    const initIrp2 = document.getElementById('initIrp2') ? document.getElementById('initIrp2').value : 0;
+    
     const initHouse = document.getElementById('initHouse').value;
     const initOther1 = document.getElementById('initOther1').value;
     const initOther2 = document.getElementById('initOther2').value;
@@ -995,8 +1060,11 @@ function updatePrintSummary() {
     const repayDebtAtRetire = document.getElementById('repayDebtAtRetire').value === 'yes' ? '즉시 상환' : '이자만 납입';
     const expectedSeverance = document.getElementById('expectedSeverance').value;
     
-    const savePension = document.getElementById('savePension').value;
-    const saveIrp = document.getElementById('saveIrp').value;
+    const savePension1 = document.getElementById('savePension1') ? document.getElementById('savePension1').value : 0;
+    const savePension2 = document.getElementById('savePension2') ? document.getElementById('savePension2').value : 0;
+    const saveIrp1 = document.getElementById('saveIrp1') ? document.getElementById('saveIrp1').value : 0;
+    const saveIrp2 = document.getElementById('saveIrp2') ? document.getElementById('saveIrp2').value : 0;
+    
     const saveIsa = document.getElementById('saveIsa').value;
     const saveCash = document.getElementById('saveCash').value;
     
@@ -1007,31 +1075,37 @@ function updatePrintSummary() {
     const adjustInflation = document.getElementById('adjustInflation').value === 'yes' ? '물가상승 반영' : '물가상승 미반영';
 
     grid.innerHTML = `
+        <div class="print-input-group"><span class="print-input-label">사용자 이름</span><span class="print-input-value">${userName}</span></div>
         <div class="print-input-group"><span class="print-input-label">현재 나이 / 은퇴 나이</span><span class="print-input-value">${currentAge}세 / ${retirementAge}세 ${retirementMonth}개월</span></div>
         <div class="print-input-group"><span class="print-input-label">기대 수익률 / 물가 상승률</span><span class="print-input-value">${returnRate}% / ${inflationRate}%</span></div>
+        <div class="print-input-group"><span class="print-input-label">소득 기준 (세액공제율)</span><span class="print-input-value">${incomeLevel}</span></div>
         
-        <div class="print-input-group"><span class="print-input-label">월 희망 생활비 (구간 1)</span><span class="print-input-value">${parseFloat(targetSpend1).toLocaleString()}만원 (${targetSpendStart1}세 ~ ${targetSpendEnd1}세)</span></div>
-        <div class="print-input-group"><span class="print-input-label">월 희망 생활비 (구간 2)</span><span class="print-input-value">${parseFloat(targetSpend2).toLocaleString()}만원 (${targetSpendStart2}세 ~ ${targetSpendEnd2}세)</span></div>
-        <div class="print-input-group"><span class="print-input-label">월 희망 생활비 (구간 3)</span><span class="print-input-value">${parseFloat(targetSpend3).toLocaleString()}만원 (${targetSpendStart3}세 ~ ${targetSpendEnd3}세)</span></div>
-        <div class="print-input-group"><span class="print-input-label">월 희망 생활비 (구간 4)</span><span class="print-input-value">${parseFloat(targetSpend4).toLocaleString()}만원 (${targetSpendStart4}세 ~ ${targetSpendEnd4}세)</span></div>
+        <div class="print-input-group" style="grid-column: span 2; border-bottom: 2px solid #cbd5e1; font-weight: 700; margin-top: 10px;"><span class="print-input-label">■ 나이대별 월 희망 생활비 (만원)</span></div>
+        <div class="print-input-group"><span class="print-input-label">구간 1 (${targetSpendStart1}세 ~ ${targetSpendEnd1}세)</span><span class="print-input-value">합계 ${parseFloat(targetSpend1).toLocaleString()}만 (고정:${targetSpendFixed1} 변동:${targetSpendVar1} 기타:${targetSpendOther1})</span></div>
+        <div class="print-input-group"><span class="print-input-label">구간 2 (${targetSpendStart2}세 ~ ${targetSpendEnd2}세)</span><span class="print-input-value">합계 ${parseFloat(targetSpend2).toLocaleString()}만 (고정:${targetSpendFixed2} 변동:${targetSpendVar2} 기타:${targetSpendOther2})</span></div>
+        <div class="print-input-group"><span class="print-input-label">구간 3 (${targetSpendStart3}세 ~ ${targetSpendEnd3}세)</span><span class="print-input-value">합계 ${parseFloat(targetSpend3).toLocaleString()}만 (고정:${targetSpendFixed3} 변동:${targetSpendVar3} 기타:${targetSpendOther3})</span></div>
+        <div class="print-input-group"><span class="print-input-label">구간 4 (${targetSpendStart4}세 ~ ${targetSpendEnd4}세)</span><span class="print-input-value">합계 ${parseFloat(targetSpend4).toLocaleString()}만 (고정:${targetSpendFixed4} 변동:${targetSpendVar4} 기타:${targetSpendOther4})</span></div>
         
+        <div class="print-input-group" style="grid-column: span 2; border-bottom: 2px solid #cbd5e1; font-weight: 700; margin-top: 10px;"><span class="print-input-label">■ 보유 자산 및 부채 (만원)</span></div>
         <div class="print-input-group"><span class="print-input-label">예적금/주식 (1 / 2 / 3)</span><span class="print-input-value">${parseFloat(initCash1).toLocaleString()} / ${parseFloat(initCash2).toLocaleString()} / ${parseFloat(initCash3).toLocaleString()} 만원</span></div>
-        <div class="print-input-group"><span class="print-input-label">ISA / 연금저축 / IRP</span><span class="print-input-value">${parseFloat(initIsa).toLocaleString()} / ${parseFloat(initPension).toLocaleString()} / ${parseFloat(initIrp).toLocaleString()} 만원</span></div>
-        
+        <div class="print-input-group"><span class="print-input-label">ISA 계좌 잔액</span><span class="print-input-value">${parseFloat(initIsa).toLocaleString()} 만원</span></div>
+        <div class="print-input-group"><span class="print-input-label">연금저축 (1 / 2) 잔액</span><span class="print-input-value">${parseFloat(initPension1).toLocaleString()} / ${parseFloat(initPension2).toLocaleString()} 만원</span></div>
+        <div class="print-input-group"><span class="print-input-label">IRP (1 / 2) 잔액</span><span class="print-input-value">${parseFloat(initIrp1).toLocaleString()} / ${parseFloat(initIrp2).toLocaleString()} 만원</span></div>
         <div class="print-input-group"><span class="print-input-label">주택 자산 / 주택연금 활용</span><span class="print-input-value">${parseFloat(initHouse).toLocaleString()} 만원 / ${useHousePension}</span></div>
         <div class="print-input-group"><span class="print-input-label">기타 자산 (1 / 2 / 3)</span><span class="print-input-value">${parseFloat(initOther1).toLocaleString()} / ${parseFloat(initOther2).toLocaleString()} / ${parseFloat(initOther3).toLocaleString()} 만원</span></div>
-        
-        <div class="print-input-group"><span class="print-input-label">기타자산 생활비 활용 여부</span><span class="print-input-value">${useOtherAsset}</span></div>
+        <div class="print-input-group"><span class="print-input-label">기타자산 생활비 활용</span><span class="print-input-value">${useOtherAsset}</span></div>
+        <div class="print-input-group"><span class="print-input-label">현재 부채 / 금리 / 상환여부</span><span class="print-input-value">${parseFloat(initDebt).toLocaleString()} 만원 / ${debtInterest}% / ${repayDebtAtRetire}</span></div>
+        <div class="print-input-group"><span class="print-input-label">예상 퇴직금 (세전)</span><span class="print-input-value">${parseFloat(expectedSeverance).toLocaleString()} 만원</span></div>
         <div class="print-input-group"><span class="print-input-label">국민연금 예상 수령액</span><span class="print-input-value">${parseFloat(nationalPension).toLocaleString()} 만원/월</span></div>
         
-        <div class="print-input-group"><span class="print-input-label">현재 부채 / 금리 / 상환 여부</span><span class="print-input-value">${parseFloat(initDebt).toLocaleString()} 만원 / ${debtInterest}% / ${repayDebtAtRetire}</span></div>
-        <div class="print-input-group"><span class="print-input-label">예상 퇴직금 (세전)</span><span class="print-input-value">${parseFloat(expectedSeverance).toLocaleString()} 만원</span></div>
+        <div class="print-input-group" style="grid-column: span 2; border-bottom: 2px solid #cbd5e1; font-weight: 700; margin-top: 10px;"><span class="print-input-label">■ 은퇴 전 연간 추가 저축액 (만원/년)</span></div>
+        <div class="print-input-group"><span class="print-input-label">연금저축 (1 / 2) 추가 저축액</span><span class="print-input-value">${parseFloat(savePension1).toLocaleString()} / ${parseFloat(savePension2).toLocaleString()} 만원</span></div>
+        <div class="print-input-group"><span class="print-input-label">IRP (1 / 2) 추가 저축액</span><span class="print-input-value">${parseFloat(saveIrp1).toLocaleString()} / ${parseFloat(saveIrp2).toLocaleString()} 만원</span></div>
+        <div class="print-input-group"><span class="print-input-label">ISA 추가 저축액</span><span class="print-input-value">${parseFloat(saveIsa).toLocaleString()} 만원</span></div>
+        <div class="print-input-group"><span class="print-input-label">일반 투자 추가 저축액</span><span class="print-input-value">${parseFloat(saveCash).toLocaleString()} 만원</span></div>
         
-        <div class="print-input-group"><span class="print-input-label">연간 추가 저축 (연금 / IRP)</span><span class="print-input-value">${parseFloat(savePension).toLocaleString()} / ${parseFloat(saveIrp).toLocaleString()} 만원</span></div>
-        <div class="print-input-group"><span class="print-input-label">연간 추가 저축 (ISA / 일반)</span><span class="print-input-value">${parseFloat(saveIsa).toLocaleString()} / ${parseFloat(saveCash).toLocaleString()} 만원</span></div>
-        
-        <div class="print-input-group"><span class="print-input-label">소득 기준 (세액공제율)</span><span class="print-input-value">${incomeLevel}</span></div>
-        <div class="print-input-group"><span class="print-input-label">생활비 물가 반영 여부</span><span class="print-input-value">${adjustInflation}</span></div>
+        <div class="print-input-group" style="grid-column: span 2; border-bottom: 2px solid #cbd5e1; font-weight: 700; margin-top: 10px;"><span class="print-input-label">■ 기타 설정</span></div>
+        <div class="print-input-group" style="grid-column: span 2;"><span class="print-input-label">생활비 물가상승 반영 여부</span><span class="print-input-value">${adjustInflation}</span></div>
     `;
 }
 
@@ -1375,8 +1449,10 @@ function renderTable() {
 function downloadExcel() {
     if (!simulationData || !simulationData.optimal) return;
     const logs = simulationData.optimal.logs;
+    const naiveLogs = simulationData.naive.logs;
     
     // Read input values for Excel report header
+    const userName = document.getElementById('userName').value || '홍길동';
     const currentAge = parseInt(document.getElementById('currentAge').value) || 45;
     const retirementAge = parseInt(document.getElementById('retirementAge').value) || 57;
     const retirementMonth = document.getElementById('retirementMonth') ? (parseInt(document.getElementById('retirementMonth').value) || 0) : 0;
@@ -1391,16 +1467,35 @@ function downloadExcel() {
     const targetSpendEnd4 = parseInt(document.getElementById('targetSpendEnd4').value) || 95;
 
     const targetSpend1 = parseFloat(document.getElementById('targetSpend1').value) || 0;
+    const targetSpendFixed1 = parseFloat(document.getElementById('targetSpendFixed1').value) || 0;
+    const targetSpendVar1 = parseFloat(document.getElementById('targetSpendVar1').value) || 0;
+    const targetSpendOther1 = parseFloat(document.getElementById('targetSpendOther1').value) || 0;
+
     const targetSpend2 = parseFloat(document.getElementById('targetSpend2').value) || 0;
+    const targetSpendFixed2 = parseFloat(document.getElementById('targetSpendFixed2').value) || 0;
+    const targetSpendVar2 = parseFloat(document.getElementById('targetSpendVar2').value) || 0;
+    const targetSpendOther2 = parseFloat(document.getElementById('targetSpendOther2').value) || 0;
+
     const targetSpend3 = parseFloat(document.getElementById('targetSpend3').value) || 0;
+    const targetSpendFixed3 = parseFloat(document.getElementById('targetSpendFixed3').value) || 0;
+    const targetSpendVar3 = parseFloat(document.getElementById('targetSpendVar3').value) || 0;
+    const targetSpendOther3 = parseFloat(document.getElementById('targetSpendOther3').value) || 0;
+
     const targetSpend4 = parseFloat(document.getElementById('targetSpend4').value) || 0;
+    const targetSpendFixed4 = parseFloat(document.getElementById('targetSpendFixed4').value) || 0;
+    const targetSpendVar4 = parseFloat(document.getElementById('targetSpendVar4').value) || 0;
+    const targetSpendOther4 = parseFloat(document.getElementById('targetSpendOther4').value) || 0;
     
     const initCash1 = parseFloat(document.getElementById('initCash1').value) || 0;
     const initCash2 = parseFloat(document.getElementById('initCash2').value) || 0;
     const initCash3 = parseFloat(document.getElementById('initCash3').value) || 0;
     const initIsa = parseFloat(document.getElementById('initIsa').value) || 0;
-    const initPension = document.getElementById('initPension') ? (parseFloat(document.getElementById('initPension').value) || 0) : 0;
-    const initIrp = document.getElementById('initIrp') ? (parseFloat(document.getElementById('initIrp').value) || 0) : 0;
+    
+    const initPension1 = document.getElementById('initPension1') ? (parseFloat(document.getElementById('initPension1').value) || 0) : 0;
+    const initPension2 = document.getElementById('initPension2') ? (parseFloat(document.getElementById('initPension2').value) || 0) : 0;
+    const initIrp1 = document.getElementById('initIrp1') ? (parseFloat(document.getElementById('initIrp1').value) || 0) : 0;
+    const initIrp2 = document.getElementById('initIrp2') ? (parseFloat(document.getElementById('initIrp2').value) || 0) : 0;
+    
     const initHouse = parseFloat(document.getElementById('initHouse').value) || 0;
     const initOther1 = parseFloat(document.getElementById('initOther1').value) || 0;
     const initOther2 = parseFloat(document.getElementById('initOther2').value) || 0;
@@ -1415,8 +1510,11 @@ function downloadExcel() {
     
     const expectedSeverance = parseFloat(document.getElementById('expectedSeverance').value) || 0;
     
-    const savePension = parseFloat(document.getElementById('savePension').value) || 0;
-    const saveIrp = parseFloat(document.getElementById('saveIrp').value) || 0;
+    const savePension1 = document.getElementById('savePension1') ? (parseFloat(document.getElementById('savePension1').value) || 0) : 0;
+    const savePension2 = document.getElementById('savePension2') ? (parseFloat(document.getElementById('savePension2').value) || 0) : 0;
+    const saveIrp1 = document.getElementById('saveIrp1') ? (parseFloat(document.getElementById('saveIrp1').value) || 0) : 0;
+    const saveIrp2 = document.getElementById('saveIrp2') ? (parseFloat(document.getElementById('saveIrp2').value) || 0) : 0;
+    
     const saveIsa = parseFloat(document.getElementById('saveIsa').value) || 0;
     const saveCash = parseFloat(document.getElementById('saveCash').value) || 0;
     
@@ -1430,24 +1528,50 @@ function downloadExcel() {
     const depletionOptimalText = kpis.depletionAgeOptimal >= 99 ? '100세 이상' : kpis.depletionAgeOptimal + '세';
     const depletionNaiveText = kpis.depletionAgeNaive >= 99 ? '100세 이상' : kpis.depletionAgeNaive + '세';
     
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
     let csvContent = "\uFEFF"; // UTF-8 BOM to prevent Korean character corruption in Excel
     
+    // Title Banner
+    csvContent += `"${userName} 님의 TaxRetire 은퇴 자금 & 절세 시뮬레이션 결과 보고서"\n`;
+    csvContent += `"출력 일시:","${dateStr}"\n\n`;
+
     // 1. Simulation Inputs Header
-    csvContent += "=== 시뮬레이션 입력 조건 ===\n";
+    csvContent += "=== 1. 시뮬레이션 입력 조건 ===\n";
     csvContent += "구분,항목,입력값,단위\n";
+    csvContent += `기본 정보,이름,${userName},\n`;
     csvContent += `기본 정보,현재 나이,${currentAge},세\n`;
     csvContent += `기본 정보,은퇴 나이,${retirementAge}세 ${retirementMonth}개월,\n`;
-    csvContent += `생활비 설정,구간 1 (${targetSpendStart1}세 ~ ${targetSpendEnd1}세),${targetSpend1},만원/월\n`;
-    csvContent += `생활비 설정,구간 2 (${targetSpendStart2}세 ~ ${targetSpendEnd2}세),${targetSpend2},만원/월\n`;
-    csvContent += `생활비 설정,구간 3 (${targetSpendStart3}세 ~ ${targetSpendEnd3}세),${targetSpend3},만원/월\n`;
-    csvContent += `생활비 설정,구간 4 (${targetSpendStart4}세 ~ ${targetSpendEnd4}세),${targetSpend4},만원/월\n`;
+    
+    csvContent += `생활비 설정,구간 1 (${targetSpendStart1}세 ~ ${targetSpendEnd1}세) 고정비,${targetSpendFixed1},만원/월\n`;
+    csvContent += `생활비 설정,구간 1 (${targetSpendStart1}세 ~ ${targetSpendEnd1}세) 변동비,${targetSpendVar1},만원/월\n`;
+    csvContent += `생활비 설정,구간 1 (${targetSpendStart1}세 ~ ${targetSpendEnd1}세) 기타,${targetSpendOther1},만원/월\n`;
+    csvContent += `생활비 설정,구간 1 (${targetSpendStart1}세 ~ ${targetSpendEnd1}세) 합계,${targetSpend1},만원/월\n`;
+    
+    csvContent += `생활비 설정,구간 2 (${targetSpendStart2}세 ~ ${targetSpendEnd2}세) 고정비,${targetSpendFixed2},만원/월\n`;
+    csvContent += `생활비 설정,구간 2 (${targetSpendStart2}세 ~ ${targetSpendEnd2}세) 변동비,${targetSpendVar2},만원/월\n`;
+    csvContent += `생활비 설정,구간 2 (${targetSpendStart2}세 ~ ${targetSpendEnd2}세) 기타,${targetSpendOther2},만원/월\n`;
+    csvContent += `생활비 설정,구간 2 (${targetSpendStart2}세 ~ ${targetSpendEnd2}세) 합계,${targetSpend2},만원/월\n`;
+    
+    csvContent += `생활비 설정,구간 3 (${targetSpendStart3}세 ~ ${targetSpendEnd3}세) 고정비,${targetSpendFixed3},만원/월\n`;
+    csvContent += `생활비 설정,구간 3 (${targetSpendStart3}세 ~ ${targetSpendEnd3}세) 변동비,${targetSpendVar3},만원/월\n`;
+    csvContent += `생활비 설정,구간 3 (${targetSpendStart3}세 ~ ${targetSpendEnd3}세) 기타,${targetSpendOther3},만원/월\n`;
+    csvContent += `생활비 설정,구간 3 (${targetSpendStart3}세 ~ ${targetSpendEnd3}세) 합계,${targetSpend3},만원/월\n`;
+    
+    csvContent += `생활비 설정,구간 4 (${targetSpendStart4}세 ~ ${targetSpendEnd4}세) 고정비,${targetSpendFixed4},만원/월\n`;
+    csvContent += `생활비 설정,구간 4 (${targetSpendStart4}세 ~ ${targetSpendEnd4}세) 변동비,${targetSpendVar4},만원/월\n`;
+    csvContent += `생활비 설정,구간 4 (${targetSpendStart4}세 ~ ${targetSpendEnd4}세) 기타,${targetSpendOther4},만원/월\n`;
+    csvContent += `생활비 설정,구간 4 (${targetSpendStart4}세 ~ ${targetSpendEnd4}세) 합계,${targetSpend4},만원/월\n`;
     
     csvContent += `보유 자산,예적금/주식 1,${initCash1},만원\n`;
     csvContent += `보유 자산,예적금/주식 2,${initCash2},만원\n`;
     csvContent += `보유 자산,예적금/주식 3,${initCash3},만원\n`;
     csvContent += `보유 자산,ISA 계좌,${initIsa},만원\n`;
-    csvContent += `보유 자산,연금저축,${initPension},만원\n`;
-    csvContent += `보유 자산,IRP 계좌,${initIrp},만원\n`;
+    csvContent += `보유 자산,연금저축 1 잔액,${initPension1},만원\n`;
+    csvContent += `보유 자산,연금저축 2 잔액,${initPension2},만원\n`;
+    csvContent += `보유 자산,IRP 1 잔액,${initIrp1},만원\n`;
+    csvContent += `보유 자산,IRP 2 잔액,${initIrp2},만원\n`;
     csvContent += `보유 자산,주택 자산,${initHouse},만원\n`;
     csvContent += `보유 자산,기타 자산 1,${initOther1},만원\n`;
     csvContent += `보유 자산,기타 자산 2,${initOther2},만원\n`;
@@ -1460,8 +1584,10 @@ function downloadExcel() {
     csvContent += `부채 및 퇴직금,은퇴 시 부채 상환 여부,${repayDebtAtRetire},\n`;
     csvContent += `부채 및 퇴직금,예상 퇴직금 (세전),${expectedSeverance},만원\n`;
     
-    csvContent += `매년 추가 저축액,연금저축 납입액,${savePension},만원/년\n`;
-    csvContent += `매년 추가 저축액,IRP 납입액,${saveIrp},만원/년\n`;
+    csvContent += `매년 추가 저축액,연금저축 1 납입액,${savePension1},만원/년\n`;
+    csvContent += `매년 추가 저축액,연금저축 2 납입액,${savePension2},만원/년\n`;
+    csvContent += `매년 추가 저축액,IRP 1 납입액,${saveIrp1},만원/년\n`;
+    csvContent += `매년 추가 저축액,IRP 2 납입액,${saveIrp2},만원/년\n`;
     csvContent += `매년 추가 저축액,ISA 납입액,${saveIsa},만원/년\n`;
     csvContent += `매년 추가 저축액,일반 투자 저축액,${saveCash},만원/년\n`;
     
@@ -1473,7 +1599,7 @@ function downloadExcel() {
     csvContent += "\n";
     
     // 2. Simulation Results (KPIs)
-    csvContent += "=== 시뮬레이션 분석 결과 (요약) ===\n";
+    csvContent += "=== 2. 시뮬레이션 분석 결과 (요약) ===\n";
     csvContent += "지표 항목,최적화 절세 전략 (최적),일반 인출 방식 (Naive),차이 및 효과\n";
     
     let lifeDiff = "";
@@ -1487,8 +1613,89 @@ function downloadExcel() {
     csvContent += `평균 실효 세율 (수령기),${kpis.effectiveTaxRate.toFixed(1)}%,15.40%,일반 대비 약 ${Math.round((1 - (kpis.effectiveTaxRate / 15.4)) * 100)}% 세금 감면 효과\n`;
     csvContent += "\n";
     
-    // 3. Simulation Raw Data Table
-    csvContent += "=== 연도별 상세 시뮬레이션 데이터 (최적화 절세 전략 적용) ===\n";
+    // 3. Optimal Payout Roadmap
+    csvContent += "=== 3. 최적 인출 로드맵 ===\n";
+    csvContent += "구간 구분,나이 범위,구간 설명,권장 세후 인출 포트폴리오 및 세금 요약\n";
+    
+    const phase1Logs = logs.filter(l => l.age >= retirementAge && l.age <= targetSpendEnd1);
+    const phase2Logs = logs.filter(l => l.age >= targetSpendStart2 && l.age <= targetSpendEnd3);
+    const phase3Logs = logs.filter(l => l.age >= targetSpendStart4);
+    
+    const phases = [
+        {
+            title: "소득 공백기 (브릿지 기간)",
+            ageSpan: (targetSpendEnd1 > retirementAge) ? `${retirementAge}세 ~ ${targetSpendEnd1}세` : `${retirementAge}세`,
+            desc: "국민연금을 아직 받지 못해 사적연금, 퇴직금, ISA 위주로 생활비를 마련해야 하는 가장 중요한 시기입니다. 1,500만원 저율과세 한도를 엄격하게 통제합니다.",
+            logs: phase1Logs
+        },
+        {
+            title: "국민연금 개시 및 중기 은퇴기",
+            ageSpan: (targetSpendEnd3 > targetSpendStart2) ? `${targetSpendStart2}세 ~ ${targetSpendEnd3}세` : `${targetSpendStart2}세`,
+            desc: "국민연금 수령이 개시되면서 사적 자산의 인출 압박이 대폭 줄어듭니다. 연금소득세가 저율과세로 추가 인하되는 시기입니다.",
+            logs: phase2Logs
+        },
+        {
+            title: "후기 안정 은퇴기",
+            ageSpan: `${targetSpendStart4}세 이후`,
+            desc: "연금소득세율이 최저세율로 진입합니다. 안전자산 중심의 자산 보호 및 최종 상속/의료비 관리에 집중해야 합니다.",
+            logs: phase3Logs
+        }
+    ];
+
+    phases.forEach(phase => {
+        if (phase.logs.length === 0) return;
+        let avgTarget = 0, avgNP = 0, avgPen = 0, avgNonTax = 0, avgSev = 0, avgIsa = 0, avgHousePension = 0, avgOther = 0, avgCash = 0, avgTax = 0;
+        phase.logs.forEach(l => {
+            avgTarget += l.targetSpend;
+            avgNP += l.withdrawals.nationalPension;
+            avgPen += l.withdrawals.pension;
+            avgNonTax += l.withdrawals.nonTaxedPension;
+            avgSev += l.withdrawals.severance;
+            avgIsa += l.withdrawals.isa;
+            avgHousePension += l.withdrawals.housePension;
+            avgOther += l.withdrawals.other;
+            avgCash += l.withdrawals.cash;
+            avgTax += l.taxPaid;
+        });
+        const count = phase.logs.length;
+        avgTarget = Math.round(avgTarget / count);
+        avgNP = Math.round(avgNP / count);
+        avgPen = Math.round(avgPen / count);
+        avgNonTax = Math.round(avgNonTax / count);
+        avgSev = Math.round(avgSev / count);
+        avgIsa = Math.round(avgIsa / count);
+        avgHousePension = Math.round(avgHousePension / count);
+        avgOther = Math.round(avgOther / count);
+        avgCash = Math.round(avgCash / count);
+        avgTax = Math.round(avgTax / count);
+        
+        let details = [];
+        if (avgNP > 0) details.push(`국민연금: 연 +${avgNP.toLocaleString()}만원`);
+        if (avgPen > 0) details.push(`연금저축/IRP 저율과세: 연 +${avgPen.toLocaleString()}만원`);
+        if (avgSev > 0) details.push(`퇴직소득세 할인분: 연 +${avgSev.toLocaleString()}만원`);
+        if (avgNonTax > 0) details.push(`연금 비과세 원금: 연 +${avgNonTax.toLocaleString()}만원`);
+        if (avgIsa > 0) details.push(`ISA 자산: 연 +${avgIsa.toLocaleString()}만원`);
+        if (avgHousePension > 0) details.push(`주택연금: 연 +${avgHousePension.toLocaleString()}만원`);
+        if (avgOther > 0) details.push(`기타 자산: 연 +${avgOther.toLocaleString()}만원`);
+        if (avgCash > 0) details.push(`일반 자산: 연 +${avgCash.toLocaleString()}만원`);
+        details.push(`평균 세금: 연 ${avgTax.toLocaleString()}만원 (실효세율 ${((avgTax / (avgTarget + avgTax)) * 100).toFixed(1)}%)`);
+        
+        let detailsStr = details.join(' | ');
+        csvContent += `"${phase.title}","${phase.ageSpan}","${phase.desc}","${detailsStr}"\n`;
+    });
+    csvContent += "\n";
+
+    // 4. Tax Saving Tips
+    csvContent += "=== 4. 핵심 절세 전략 및 가이드 ===\n";
+    csvContent += "규칙 번호,규칙 제목,상세 설명\n";
+    csvContent += `"규칙 1","사적연금 연 1,500만원 인출 제한 규칙","연금저축 및 IRP의 세액공제 받은 원금과 운용 수익은 연간 총 수령액이 1,500만원 이하일 때만 3.3%~5.5%의 저율 연금소득세가 부과됩니다. 1,500만원을 초과하면 종합과세 또는 16.5% 분리과세가 적용되므로 시뮬레이터는 연금 인출액을 연 1,490만원 이하로 통제합니다."\n`;
+    csvContent += `"규칙 2","퇴직금(퇴직소득)의 IRP 수령 절세 효과","은퇴 시 수령하는 퇴직금을 IRP에 이체한 뒤 연금 형태로 수령하면 퇴직소득세의 30%(1~10년 차) 또는 40%(11년 차 이후)를 감면받습니다. 이는 1,500만원 사적연금 한도에 포함되지 않는 유용한 생활비 재원입니다."\n`;
+    csvContent += `"규칙 3","ISA 만기 전환을 통한 추가 세액공제 꿀팁","3년 만기가 된 ISA 적립금을 60일 이내에 연금저축/IRP로 전환하면 전환 금액의 10% (최대 300만원 한도)에 대해 해당 연도 세액공제 혜택을 추가로 제공합니다. 시뮬레이터는 매 3년마다 이를 자동 적용합니다."\n`;
+    csvContent += `"규칙 4","세액공제 받지 않은 연금 원금의 비과세 인출","연금저축/IRP에 세액공제 한도(900만원)를 초과하여 납입한 원금은 수령 시 세금을 전혀 내지 않으며, 1,500만원 한도에도 포함되지 않습니다. 따라서 필요시 세금 없이 먼저 찾아 쓸 수 있습니다."\n`;
+    csvContent += "\n";
+    
+    // 5. Simulation Raw Data Table
+    csvContent += "=== 5. 연도별 상세 시뮬레이션 데이터 (최적화 절세 전략 적용) ===\n";
     csvContent += "나이,총 자산(만원),연금저축/IRP(만원),퇴직금(IRP)(만원),ISA(만원),일반 계좌(만원),주택 자산(만원),기타 자산(만원),부채 잔액(만원),수령액 합계(만원),부족 금액(만원),세금 납부액(만원)\n";
     
     logs.forEach(log => {
@@ -1523,7 +1730,7 @@ function downloadExcel() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "TaxRetire_시뮬레이션_결과보고서.csv");
+    link.setAttribute("download", `${userName}_TaxRetire_시뮬레이션_결과보고서.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();

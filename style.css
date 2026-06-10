@@ -362,7 +362,7 @@ body.light-theme .moon-icon {
 }
 
 /* Input Fields Styling */
-input[type="number"], select {
+input[type="number"], input[type="text"], select {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-sm);
@@ -375,7 +375,7 @@ input[type="number"], select {
     width: 100%;
 }
 
-input[type="number"]:focus, select:focus {
+input[type="number"]:focus, input[type="text"]:focus, select:focus {
     outline: none;
     border-color: var(--border-focus);
     box-shadow: 0 0 0 3px var(--primary-light);
@@ -1036,6 +1036,47 @@ body.light-theme .action-btn-outline:hover {
     min-width: 100px;
 }
 
+/* Bracket Cards and Cost Grid Styles */
+.bracket-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 12px;
+    transition: border-color var(--transition-speed);
+}
+.bracket-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+body.light-theme .bracket-card:hover {
+    border-color: rgba(15, 23, 42, 0.15);
+}
+.bracket-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.spend-split-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+.spend-input-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.spend-input-item label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+.spend-input-item input[type="number"] {
+    padding: 6px 8px;
+    font-size: 13px;
+    text-align: right;
+}
+
 /* Print-only elements are hidden by default in screen layout */
 .print-only-section {
     display: none;
@@ -1137,18 +1178,9 @@ body.light-theme .action-btn-outline:hover {
         display: block !important;
     }
 
-    /* Print Header Banner */
+    /* Print Header Banner (handled dynamically by DOM element) */
     .results-panel::before {
-        content: "TaxRetire | 은퇴 자금 & 절세 시뮬레이션 보고서";
-        display: block;
-        font-family: 'Outfit', sans-serif;
-        font-size: 24px;
-        font-weight: 800;
-        text-align: center;
-        margin-bottom: 24px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid #0f172a;
-        color: #0f172a !important;
+        display: none !important;
     }
 
     .kpi-dashboard {
